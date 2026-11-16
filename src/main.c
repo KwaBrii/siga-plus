@@ -1,11 +1,12 @@
 
 #include <stdio.h>
+#include "estudantes.h"
 #include "database.h"
+
 
 // Prototipos das funcoes
 void exibirMenu(void);
 void limparBuffer(void);
-void gerenciarEstudantes(void);
 void gerenciarCursos(void);
 void gerenciarMatriculas(void);
 void exibirRelatorios(void);
@@ -41,7 +42,7 @@ int main(void) {
         limparBuffer();
         switch (opcao) {
             case 1:
-                gerenciarEstudantes();
+                gerenciarEstudantes(db);
                 break;
             case 2:
                 gerenciarCursos();
@@ -86,11 +87,6 @@ void limparBuffer(void) {
 
     while ((caractere = getchar()) != '\n' && caractere != EOF) {
     }
-}
-
-// Modulo de estudantes
-void gerenciarEstudantes(void) {
-    printf("\nModulo de estudantes em desenvolvimento.\n");
 }
 
 // Modulo de cursos
