@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include "database.h"
 
 // Prototipos das funcoes
 void exibirMenu(void);
@@ -10,6 +11,18 @@ void gerenciarMatriculas(void);
 void exibirRelatorios(void);
 
 int main(void) {
+    sqlite3 *db = NULL;
+    if (conectarBanco(&db) != SQLITE_OK) {
+        if (db != NULL) {
+            sqlite3_close(db);
+        }
+        return 1;
+    }
+
+    if (criarTabelaEstudantes(db) != SQLITE_OK) {
+        sqlite3_close(db);
+        return 1;
+    }
     int opcao = -1;
 
     do {
@@ -48,6 +61,7 @@ int main(void) {
         }
 
     } while (opcao != 0);
+    sqlite3_close(db);
     return 0;
 }
 
