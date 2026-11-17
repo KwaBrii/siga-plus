@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include "estudantes.h"
 #include "cursos.h"
+#include "matriculas.h"
 #include "database.h"
 
 // Prototipos das funcoes
 void exibirMenu(void);
 void limparBuffer(void);
-void gerenciarMatriculas(void);
 void exibirRelatorios(void);
 
 int main(void) {
@@ -17,6 +17,7 @@ int main(void) {
         if (db != NULL) {
             sqlite3_close(db);
         }
+
         return 1;
     }
 
@@ -26,6 +27,16 @@ int main(void) {
     }
 
     if (criarTabelaCursos(db) != SQLITE_OK) {
+        sqlite3_close(db);
+        return 1;
+    }
+
+    if (criarTabelaMatriculas(db) != SQLITE_OK) {
+        sqlite3_close(db);
+        return 1;
+    }
+
+    if (atualizarMatriculasExpiradas(db) != SQLITE_OK) {
         sqlite3_close(db);
         return 1;
     }
@@ -60,7 +71,7 @@ int main(void) {
                 break;
 
             case 3:
-                gerenciarMatriculas();
+                gerenciarMatriculas(db);
                 break;
 
             case 4:
@@ -105,11 +116,6 @@ void limparBuffer(void) {
     while ((caractere = getchar()) != '\n' &&
            caractere != EOF) {
     }
-}
-
-// Modulo de matriculas
-void gerenciarMatriculas(void) {
-    printf("\nModulo de matriculas em desenvolvimento.\n");
 }
 
 // Modulo de relatorios

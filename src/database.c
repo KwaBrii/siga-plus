@@ -5,11 +5,33 @@
 // Conecta ao banco de dados
 int conectarBanco(sqlite3 **db) {
     int resultado = sqlite3_open("siga_plus.db", db);
+
     if (resultado != SQLITE_OK) {
-        fprintf(stderr, "Erro ao conectar ao banco: %s\n",
-                sqlite3_errmsg(*db));
+        fprintf(
+            stderr,
+            "Erro ao conectar ao banco: %s\n",
+            sqlite3_errmsg(*db)
+        );
         return resultado;
     }
+
+    resultado = sqlite3_exec(
+        *db,
+        "PRAGMA foreign_keys = ON;",
+        NULL,
+        NULL,
+        NULL
+    );
+
+    if (resultado != SQLITE_OK) {
+        fprintf(
+            stderr,
+            "Erro ao ativar chaves estrangeiras: %s\n",
+            sqlite3_errmsg(*db)
+        );
+        return resultado;
+    }
+
     printf("\nBanco de dados conectado com sucesso!\n");
     return SQLITE_OK;
 }
@@ -76,5 +98,62 @@ int criarTabelaCursos(sqlite3 *db) {
         return resultado;
     }
     printf("Tabela de cursos verificada com sucesso!\n");
+    return SQLITE_OK;
+}
+
+int criarTabelaMatriculas(sqlite3 *db) {
+    const char *sql =
+        "CREATE TABLE IF NOT EXISTS matriculas ("
+        "id_matricula INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "id_estudante INTEGER NOT NULL,"
+        "id_curso INTEGER NOT NULL,"
+        "status TEXT NOT NULL DEFAULT 'PENDENTE' "
+        "CHECK (status IN ("
+        "'PENDENTE', 'ATIVA', 'CANCELADA', "
+        "'CONCLUIDA', 'EXPIRADA'"
+        ")),"
+        "criada_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+        "expira_em TEXT NOT NULL,"
+        "confirmada_em TEXT,"
+        "cancelada_em TEXT,"
+        "concluida_em TEXT,"
+        "FOREIGN KEY (id_estudante) "
+        "REFERENCES estudantes(id_estudante),"
+        "FOREIGN KEY (id_curso) "
+        "REFERENCES cursos(id_curso)"
+        ");"
+
+        "CREATE UNIQUE INDEX IF NOT EXISTS "
+        "idx_matriculas_unicas_ativas "
+        "ON matriculas(id_estudante, id_curso) "
+        "WHERE status IN ('PENDENTE', 'ATIVA');"
+
+        "CREATE INDEX IF NOT EXISTS "
+        "idx_matriculas_curso_status "
+        "ON matriculas(id_curso, status);";
+
+    char *mensagemErro = NULL;
+
+    int resultado = sqlite3_exec(
+        db,
+        sql,
+        NULL,
+        NULL,
+        &mensagemErro
+    );
+
+    if (resultado != SQLITE_OK) {
+        fprintf(
+            stderr,
+            "Erro ao criar tabela de matriculas: %s\n",
+            mensagemErro
+        );
+
+        sqlite3_free(mensagemErro);
+        return resultado;
+    }
+
+    printf("Tabela de matriculas verificada com sucesso!\n");
+
     return SQLITE_OK;
 }
