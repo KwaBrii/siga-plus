@@ -1,18 +1,18 @@
 
 #include <stdio.h>
 #include "estudantes.h"
+#include "cursos.h"
 #include "database.h"
-
 
 // Prototipos das funcoes
 void exibirMenu(void);
 void limparBuffer(void);
-void gerenciarCursos(void);
 void gerenciarMatriculas(void);
 void exibirRelatorios(void);
 
 int main(void) {
     sqlite3 *db = NULL;
+
     if (conectarBanco(&db) != SQLITE_OK) {
         if (db != NULL) {
             sqlite3_close(db);
@@ -24,15 +24,24 @@ int main(void) {
         sqlite3_close(db);
         return 1;
     }
+
+    if (criarTabelaCursos(db) != SQLITE_OK) {
+        sqlite3_close(db);
+        return 1;
+    }
+
     int opcao = -1;
 
     do {
         exibirMenu();
+
         printf("Escolha uma opcao: ");
+
         if (scanf("%d", &opcao) != 1) {
             if (feof(stdin)) {
                 break;
             }
+
             printf("\nEntrada invalida! Digite um numero.\n");
             limparBuffer();
             opcao = -1;
@@ -40,29 +49,37 @@ int main(void) {
         }
 
         limparBuffer();
+
         switch (opcao) {
             case 1:
                 gerenciarEstudantes(db);
                 break;
+
             case 2:
-                gerenciarCursos();
+                gerenciarCursos(db);
                 break;
+
             case 3:
                 gerenciarMatriculas();
                 break;
+
             case 4:
                 exibirRelatorios();
                 break;
+
             case 0:
                 printf("\nEncerrando o SIGA+...\n");
                 break;
+
             default:
                 printf("\nOpcao inexistente! Tente novamente.\n");
                 break;
         }
 
     } while (opcao != 0);
+
     sqlite3_close(db);
+
     return 0;
 }
 
@@ -85,13 +102,9 @@ void exibirMenu(void) {
 void limparBuffer(void) {
     int caractere;
 
-    while ((caractere = getchar()) != '\n' && caractere != EOF) {
+    while ((caractere = getchar()) != '\n' &&
+           caractere != EOF) {
     }
-}
-
-// Modulo de cursos
-void gerenciarCursos(void) {
-    printf("\nModulo de cursos em desenvolvimento.\n");
 }
 
 // Modulo de matriculas

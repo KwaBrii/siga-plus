@@ -6,5 +6,6 @@
 
 int conectarBanco(sqlite3 **db);
 int criarTabelaEstudantes(sqlite3 *db);
+int criarTabelaCursos(sqlite3 *db);
 
 #endif
