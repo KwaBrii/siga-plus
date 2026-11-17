@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -374,7 +373,6 @@ static int contarVagasOcupadas(
 // ========================================
 // CADASTRAR MATRICULA
 // ========================================
-
 static void cadastrarMatricula(sqlite3 *db) {
     char codigoEstudante[31];
     char codigoCurso[31];
@@ -528,7 +526,6 @@ static void cadastrarMatricula(sqlite3 *db) {
 // ========================================
 // EXIBIR MATRICULAS
 // ========================================
-
 static void imprimirMatricula(sqlite3_stmt *stmt) {
     printf("\nMatricula: %d\n",
            sqlite3_column_int(stmt, 0));
@@ -558,7 +555,6 @@ static void imprimirMatricula(sqlite3_stmt *stmt) {
 // ========================================
 // LISTAR MATRICULAS
 // ========================================
-
 static void listarMatriculas(sqlite3 *db) {
     if (atualizarMatriculasExpiradas(db) != SQLITE_OK) {
         return;
@@ -620,7 +616,6 @@ static void listarMatriculas(sqlite3 *db) {
 // ========================================
 // BUSCAR MATRICULA
 // ========================================
-
 static void buscarMatricula(sqlite3 *db) {
     int idMatricula;
 
@@ -688,7 +683,6 @@ static void buscarMatricula(sqlite3 *db) {
 // ========================================
 // CONFIRMAR MATRICULA
 // ========================================
-
 static void confirmarMatricula(sqlite3 *db) {
     int idMatricula;
 
@@ -767,7 +761,6 @@ static void confirmarMatricula(sqlite3 *db) {
 // ========================================
 // CANCELAR MATRICULA
 // ========================================
-
 static void cancelarMatricula(sqlite3 *db) {
     int idMatricula;
 
@@ -844,7 +837,6 @@ static void cancelarMatricula(sqlite3 *db) {
 // ========================================
 // CONCLUIR MATRICULA
 // ========================================
-
 static void concluirMatricula(sqlite3 *db) {
     int idMatricula;
 
@@ -921,20 +913,31 @@ static void concluirMatricula(sqlite3 *db) {
 // ========================================
 // MENU DE MATRICULAS
 // ========================================
-
-void gerenciarMatriculas(sqlite3 *db) {
+void gerenciarMatriculas(sqlite3 *db, const char *perfil) {
     int opcao;
+
+    int administrativo =
+        strcmp(perfil, "ADMINISTRATIVO") == 0;
 
     do {
         printf("\n====================================\n");
         printf("      GERENCIAMENTO DE MATRICULAS\n");
         printf("====================================\n");
-        printf("1 - Realizar matricula\n");
+
+        if (administrativo) {
+            printf("1 - Realizar matricula\n");
+        }
+
         printf("2 - Listar matriculas\n");
         printf("3 - Buscar matricula\n");
-        printf("4 - Confirmar matricula\n");
-        printf("5 - Cancelar matricula\n");
-        printf("6 - Concluir matricula\n");
+
+        if (administrativo) {
+            printf("4 - Confirmar matricula\n");
+            printf("5 - Cancelar matricula\n");
+        } else {
+            printf("6 - Concluir matricula\n");
+        }
+
         printf("0 - Voltar ao menu principal\n");
         printf("====================================\n");
 
@@ -950,7 +953,11 @@ void gerenciarMatriculas(sqlite3 *db) {
 
         switch (opcao) {
             case 1:
-                cadastrarMatricula(db);
+                if (administrativo) {
+                    cadastrarMatricula(db);
+                } else {
+                    printf("\nAcesso negado.\n");
+                }
                 break;
 
             case 2:
@@ -962,15 +969,27 @@ void gerenciarMatriculas(sqlite3 *db) {
                 break;
 
             case 4:
-                confirmarMatricula(db);
+                if (administrativo) {
+                    confirmarMatricula(db);
+                } else {
+                    printf("\nAcesso negado.\n");
+                }
                 break;
 
             case 5:
-                cancelarMatricula(db);
+                if (administrativo) {
+                    cancelarMatricula(db);
+                } else {
+                    printf("\nAcesso negado.\n");
+                }
                 break;
 
             case 6:
-                concluirMatricula(db);
+                if (!administrativo) {
+                    concluirMatricula(db);
+                } else {
+                    printf("\nAcesso negado.\n");
+                }
                 break;
 
             case 0:

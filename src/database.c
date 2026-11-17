@@ -157,3 +157,44 @@ int criarTabelaMatriculas(sqlite3 *db) {
 
     return SQLITE_OK;
 }
+
+
+int criarTabelaUsuarios(sqlite3 *db) {
+    const char *sql =
+        "CREATE TABLE IF NOT EXISTS usuarios ("
+        "id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "nome TEXT NOT NULL,"
+        "login TEXT NOT NULL UNIQUE,"
+        "senha_hash BLOB NOT NULL CHECK(length(senha_hash) = 32),"
+        "salt BLOB NOT NULL CHECK(length(salt) = 16),"
+        "perfil TEXT NOT NULL "
+        "CHECK(perfil IN ('ADMINISTRATIVO', 'PEDAGOGICO')),"
+        "ativo INTEGER NOT NULL DEFAULT 1 "
+        "CHECK(ativo IN (0, 1))"
+        ");";
+
+    char *mensagemErro = NULL;
+
+    int resultado = sqlite3_exec(
+        db,
+        sql,
+        NULL,
+        NULL,
+        &mensagemErro
+    );
+
+    if (resultado != SQLITE_OK) {
+        fprintf(
+            stderr,
+            "Erro ao criar tabela de usuarios: %s\n",
+            mensagemErro
+        );
+
+        sqlite3_free(mensagemErro);
+        return resultado;
+    }
+
+    printf("Tabela de usuarios verificada com sucesso!\n");
+
+    return SQLITE_OK;
+}
