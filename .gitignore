@@ -103,3 +103,17 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# SQLite temporary files
+*.db-journal
+*.sqlite-journal
+*.db-wal
+*.db-shm
+
+# Build directory
+/build/
