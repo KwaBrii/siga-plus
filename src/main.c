@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 
@@ -7,11 +6,11 @@
 #include "matriculas.h"
 #include "database.h"
 #include "auth.h"
+#include "relatorios.h"
 
 // Prototipos das funcoes
 void exibirMenu(const char *perfil);
 void limparBuffer(void);
-void exibirRelatorios(void);
 
 int main(void) {
     sqlite3 *db = NULL;
@@ -99,7 +98,7 @@ int main(void) {
 
             case 5:
                 if (administrativo) {
-                    exibirRelatorios();
+                    exibirRelatorios(db);
                 } else {
                     printf("\nAcesso negado.\n");
                 }
@@ -162,12 +161,4 @@ void limparBuffer(void) {
     while ((caractere = getchar()) != '\n' &&
            caractere != EOF) {
     }
-}
-
-// ========================================
-// RELATORIOS
-// ========================================
-
-void exibirRelatorios(void) {
-    printf("\nModulo de relatorios em desenvolvimento.\n");
 }
